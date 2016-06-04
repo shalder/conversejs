@@ -1,4 +1,4 @@
 # conversejs
 Web Chat Window 
-kldsf'k'f;;flsd;fld;fl;fl;w
-efl]ll
+
+We are working on creating a webchat window that will recieve answers send fro openfire
