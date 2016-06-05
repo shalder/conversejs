@@ -1,4 +1,5 @@
 /**
+/**
  * @license almond 0.3.2 Copyright jQuery Foundation and other contributors.
  * Released under MIT license, http://github.com/requirejs/almond/LICENSE
  */
@@ -20589,19 +20590,25 @@ Strophe.Connection.prototype = {
      *      (username) if intending to impersonate another user.
      */
     connect: function (jid, pass, callback, wait, hold, route, authcid) {
+        console.log("connect func1");
         this.jid = jid;
         /** Variable: authzid
          *  Authorization identity.
          */
         this.authzid = Strophe.getBareJidFromJid(this.jid);
+        console.log(this.authzid)
         /** Variable: authcid
          *  Authentication identity (User name).
          */
         this.authcid = authcid || Strophe.getNodeFromJid(this.jid);
+        console.log(this.authcid)
+
         /** Variable: pass
          *  Authentication identity (User password).
          */
         this.pass = pass;
+        console.log(this.pass)
+
         /** Variable: servtype
          *  Digest MD5 compatibility.
          */
@@ -20616,6 +20623,12 @@ Strophe.Connection.prototype = {
         this.domain = Strophe.getDomainFromJid(this.jid);
 
         this._changeConnectStatus(Strophe.Status.CONNECTING, null);
+
+                console.log(wait)
+
+                        console.log(hold)
+
+                                console.log(route)
 
         this._proto._connect(wait, hold, route);
     },
@@ -20645,6 +20658,7 @@ Strophe.Connection.prototype = {
      *      allowed range of request ids that are valid.  The default is 5.
      */
     attach: function (jid, sid, rid, callback, wait, hold, wind) {
+        console.log("Attach");
         if (this._proto instanceof Strophe.Bosh) {
             this._proto._attach(jid, sid, rid, callback, wait, hold, wind);
         } else {
@@ -21983,6 +21997,7 @@ Strophe.SASLMechanism.prototype = {
    *    (Strophe.Connection) connection - Target Connection.
    */
   onStart: function(connection) {
+      
     this._connection = connection;
   },
 
@@ -22404,6 +22419,7 @@ Strophe.Request.prototype = {
  *    A new Strophe.Bosh object.
  */
 Strophe.Bosh = function(connection) {
+    console.log("Bosh1");
     this._conn = connection;
     /* request id for body tags */
     this.rid = Math.floor(Math.random() * 4294967295);
@@ -22475,6 +22491,9 @@ Strophe.Bosh.prototype = {
      *  Creates and sends the Request that initializes the BOSH connection.
      */
     _connect: function (wait, hold, route) {
+                console.log("connect func2");
+        console.log(Strophe.NS.BOSH);
+
         this.wait = wait || this.wait;
         this.hold = hold || this.hold;
         this.errors = 0;
@@ -22498,7 +22517,10 @@ Strophe.Bosh.prototype = {
         }
 
         var _connect_cb = this._conn._connect_cb;
-
+        console.log("Fingers Crossed");
+        console.log(body.tree());
+        console.log(this._conn);
+        console.log(this._throttledRequestHandler());
         this._requests.push(
             new Strophe.Request(body.tree(),
                                 this._onRequestStateChange.bind(
@@ -22615,6 +22637,7 @@ Strophe.Bosh.prototype = {
      */
     _connect_cb: function (bodyWrap) {
         var typ = bodyWrap.getAttribute("type");
+        console.log("Bitch");
         var cond, conflict;
         if (typ !== null && typ == "terminate") {
             // an error occurred
@@ -23231,6 +23254,7 @@ return Strophe;
  *    A new Strophe.WebSocket object.
  */
 Strophe.Websocket = function(connection) {
+    console.log("Bosh2");
     this._conn = connection;
     this.strip = "wrapper";
 
@@ -23347,6 +23371,8 @@ Strophe.Websocket.prototype = {
      */
     _connect: function () {
         // Ensure that there is no open WebSocket from a previous Connection.
+                console.log("connect func3");
+
         this._closeSocket();
 
         // Create the new WobSocket
@@ -28682,7 +28708,14 @@ return Backbone.BrowserStorage;
 
         this.onConnectStatusChanged = function (status, condition, reconnect) {
             converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
+            console.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
+            console.log(status);
+            //console.log(condition);
+            //console.log(reconnect);
+
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+                console.log("00");
+                console.log(status);
                 // By default we always want to send out an initial presence stanza.
                 converse.send_initial_presence = true;
                 delete converse.disconnection_cause;
@@ -28699,17 +28732,29 @@ return Backbone.BrowserStorage;
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
                 converse.onDisconnected(condition);
+                                console.log("11");
+
             } else if (status === Strophe.Status.ERROR) {
                 converse.giveFeedback(__('Error'), 'error');
+                                                console.log("22");
+
             } else if (status === Strophe.Status.CONNECTING) {
                 converse.giveFeedback(__('Connecting'));
+                                                console.log("33");
+
             } else if (status === Strophe.Status.AUTHENTICATING) {
                 converse.giveFeedback(__('Authenticating'));
+                                                console.log("44");
+
             } else if (status === Strophe.Status.AUTHFAIL) {
+                                                console.log("55");
+
                 converse.giveFeedback(__('Authentication Failed'), 'error');
                 converse.connection.disconnect(__('Authentication Failed'));
                 converse.disconnection_cause = Strophe.Status.AUTHFAIL;
             } else if (status === Strophe.Status.CONNFAIL) {
+                                                console.log("66");
+
                 if (converse.connection.authenticated) {
                     // Only set the disconnection_cause if we're still
                     // authenticated. If we're not, then the user logged out,
@@ -28718,10 +28763,16 @@ return Backbone.BrowserStorage;
                     converse.disconnection_cause = Strophe.Status.CONNFAIL;
                 }
             } else if (status === Strophe.Status.DISCONNECTING) {
+                                                console.log("77");
+
                 if (condition) {
                     converse.giveFeedback(condition, 'error');
                 }
             }
+            else {
+                console.log("thenga");
+            }
+            
         };
 
         this.updateMsgCounter = function () {
@@ -28776,15 +28827,40 @@ return Backbone.BrowserStorage;
             }
             this.session.browserStorage._clear();
         };
+        
+         this.logOut = function () {
+            console.log("JS Logging Out");
+            //var ID = generateID();
+            
+            setTimeout(function() {
+                converse.chatboxviews.closeAllChatBoxes();
+                converse.clearSession();
+                if (typeof converse.connection !== 'undefined') {
+                    converse.connection.disconnect();
+                    converse.connection.reset();
+                }
+            }, 5000);
 
-        this.logOut = function () {
-            converse.chatboxviews.closeAllChatBoxes();
-            converse.clearSession();
-            if (typeof converse.connection !== 'undefined') {
-                converse.connection.disconnect();
-                converse.connection.reset();
-            }
+            //this.logIn({'jid':ID+'@139.162.51.26','password':''+ID});
+
         };
+
+        function generateID()
+        {
+                var ID = Math.round(Math.random()*10000000000);
+                console.log("ID sys cs generated:"+ID);
+                //var msg = "";
+                var pres = $pres({'from':'guest@139.162.51,26', 'to': 'master@139.162.51,26', 'type':'chat'});
+                //var msg = converse.env.$msg({
+                //from: 'guest@139.162.51.26',
+                //to:'master@139.162.51.26',
+                //type:'chat',
+                pres.c("body").t("shubah ho gaya mamu:" +ID);
+                console.log(pres);
+                converse.connection.send(pres);
+                //converse.connection.send(
+                return ID;
+        }
 
         this.registerGlobalEventHandlers = function () {
             $(window).on("blur focus", function (ev) {
@@ -29481,7 +29557,7 @@ return Backbone.BrowserStorage;
                     converse.user.login({'jid':$ID.toString()+"@139.162.51.26",'password':$ID.toString()});
 
                 }*/
-                console.log(message);
+                //console.log(message);
                 var $message = $(message),
                     contact_jid, $forwarded, $delay, from_bare_jid,
                     from_resource, is_me, msgid,
@@ -29489,7 +29565,7 @@ return Backbone.BrowserStorage;
                     from_jid = $message.attr('from'),
                     to_jid = $message.attr('to'),
                     to_resource = Strophe.getResourceFromJid(to_jid);
-                    console.log($message);
+                    //console.log($message);
 
                 if (to_resource && to_resource !== converse.resource) {
                     converse.log(
@@ -29896,24 +29972,44 @@ return Backbone.BrowserStorage;
 
         this.autoLogin = function (credentials) {
             if (credentials) {
+                console.log("AutoLogin");
+                console.log(credentials);
+
                 // If passed in, then they come from credentials_url, so we
                 // set them on the converse object.
                 this.jid = credentials.jid;
                 this.password = credentials.password;
             }
             if (this.authentication === converse.ANONYMOUS) {
+                console.log("checking login now");
+
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === converse.LOGIN) {
+                console.log("checking checking");
                 if (!this.password) {
+                    console.log("pass1");
                     throw new Error("initConnection: If you use auto_login and "+
                         "authentication='login' then you also need to provide a password.");
                 }
                 var resource = Strophe.getResourceFromJid(this.jid);
                 if (!resource) {
+                    console.log("pass2");
+                    console.log(resource);
+                    console.log(this.jid);
+                    console.log(this.password);
+
+
                     this.jid = this.jid.toLowerCase() + converse.generateResource();
+                    console.log(this.jid);
+
                 } else {
+                                        console.log("pass3");
+
                     this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
+                console.log(this.jid);
+                console.log(this.password);
+                console.log(this.onConnectStatusChanged);
                 this.connection.connect(this.jid, this.password, this.onConnectStatusChanged);
             }
         };
@@ -29951,6 +30047,8 @@ return Backbone.BrowserStorage;
 
         this.logIn = function (credentials) {
             if (credentials) {
+                //mandal
+                console.log(credentials);
                 // When credentials are passed in, they override prebinding
                 // or credentials fetching via HTTP
                 this.autoLogin(credentials);
@@ -34679,6 +34777,8 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                 },
 
                 connect: function ($form, jid, password) {
+                            console.log("connect func4");
+
                     var resource;
                     if ($form) {
                         $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
