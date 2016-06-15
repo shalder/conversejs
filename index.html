@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Converse.js</title>
     <meta charset="utf-8">
@@ -8,104 +9,189 @@
     <meta name="description" content="Converse.js: A free chat client for your website" />
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
-   <!-- <label="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
+    <!-- <label="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
    <link type="text/css" rel="stylesheet" media="screen" href="components/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />-->
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
     <!--<script type="text/javascript" src="analytics.js"></script>
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>-->
+    <!-- <script src="dist/converse-mobile.js"></script> -->
     <script src="dist/converse.js"></script>
-    </head>
-<body> <!--id="page-top" data-spy="scroll" data-target=".navbar-custom"-->
-Rajdeep Mandal
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+</head>
+
+<body>
+    <!--id="page-top" data-spy="scroll" data-target=".navbar-custom"-->
+    Rajdeep Mandal
 </body>
 
 <script>
-    require(['converse'], function (converse) {
-        (function () {
+    require(['converse'], function(converse) {
+        (function() {
             /* XXX: This function initializes jquery.easing for the https://conversejs.org
-            * website. This code is only useful in the context of the converse.js
-            * website and converse.js itself is NOT dependent on it.
-            */
+             * website. This code is only useful in the context of the converse.js
+             * website and converse.js itself is NOT dependent on it.
+             */
             var $ = converse.env.jQuery;
         })();
-converse.initialize({
-	   // bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+        converse.initialize({
+            // bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
             bosh_service_url: 'http://139.162.51.26:7070/http-bind/', // http://139.162.51.26:7070/http-bind/Please use this connection manager only for testing purposes
             //authentication: 'anonymous',
-	        keepalive: true,
+            keepalive: false,
             jid: 'guest@139.162.51.26',
             password: 'guest',
             allow_chat_pending_contacts: true,
-	        auto_login: true,
-            message_archiving: false,
-            message_carbons: true,
+            auto_login: true,
+            message_archiving: 'never',
+            message_carbons: false,
             play_sounds: false,
             debug: false,
             roster_groups: false,
-            show_controlbox_by_default: true,
+            show_controlbox_by_default: false,
             cache_otr_key: false,
-        });   
+        });``
 
-setTimeout(function() {
-    var ID = generateID();
-    /*setTimeout(function() {
-        console.log("Login: jid:"+ ID.toString()+"@139.162.51.26,password:"+ID.toString());
-        //converse.user.logout();
-        //converse.user.login({'jid':ID.toString()+"@139.162.51.26",'password':ID.toString()});
-    }, 5000);
-    console.log("Click");
-    //document.getElementsByClassName("toggle-controlbox")[0].setAttribute('onclick','openChats('+ID+')');
-    
-    document.getElementsByClassName("conn-feedback")[0].setAttribute('id','conn-feedback');
-    document.getElementById('conn-feedback').innerHTML = "Chat Now";
-    var eClsBtn = document.getElementsByClassName("close-chatbox-button");
-    for (i = 0; i < eClsBtn.length; i++) {
-        eClsBtn[i].style.display = 'none';
-    }
-    //document.getElementsByClassName("minimized-chats-flyout")[0].style.display='none';
-    */
-}, 10000);
-});
-    //var ID = "";
+        // tried to listen to logout events starts
+        var eMinWin = document.getElementsByClassName("minimized-chats-flyout");
+            for (i = 0; i < eMinWin.length; i++) {
+                eMinWin[i].style.display = 'none';
+            }
+        var eMaxWin = document.getElementsByClassName("box-flyout");
+            for (i = 0; i < eMaxWin.length; i++) {
+                eMaxWin[i].style.display = 'none';
+            }
+         converse.listen.once('initialized', function (event) {
+             console.log("Login Status in event listener" + converse.connection.connected());
+             ID = generateID();
+             setTimeout(function(){
+                 userLogout();
+             },3000);
+             setTimeout(function(){
+                 userLogin(ID);
+             },6000);
+             /*setTimeout(function(){
+                document.getElementsByClassName("toggle-controlbox")[0].setAttribute('onclick','openChats()');
+                document.getElementsByClassName("conn-feedback")[0].setAttribute('id','conn-feedback');
+                document.getElementById('conn-feedback').innerHTML = "Chat Now";
+                var eClsBtn = document.getElementsByClassName("close-chatbox-button");
+                for (i = 0; i < eClsBtn.length; i++) {
+                    eClsBtn[i].style.display = 'none';
+                }
+             },3000);
+             */
+             
+         });
+        converse.listen.on('connected', function (event) {
+            console.log("Connected");
+            converse.contacts.add('master@139.162.51.26'); 
+            converse.chats.open('master@139.162.51.26');
+            document.getElementsByClassName('chat-title')[0].innerHTML = 'Agent Vinod';
+            //document.getElementsByClassName('box-flyout')[0].style.display = 'none';
+            //document.getElementsByClassName('close-chatbox-button')[0].style.display = 'none';
+        });
+
+
+
+
+        // converse.listen.on('contactStatusChanged', function (event, buddy) {
+        //     console.log("Login Status in status change event     listener" + converse.connection.connected());
+        //     // userLogin();
+        //     console.log('status change event');
+        // });
+
+        // converse.listen.on('disconnected', function (event) {
+        //     console.log("disconnect Status in event listener" + converse.connection.connected());        
+        // });
+        // tried to listen to logout events starts
+        
+        
+        // setTimeout(function() {
+        //     console.log("Login Status" + converse.connection.connected());
+        //     userLogout();
+        //     setTimeout(function(){
+        //         console.log("Login Status" + converse.connection.connected());
+        //         setTimeout(function(){
+        //             userLogin();
+        //         },10000);
+        //     },5000)
+        // }, 5000);
+
+        // console.log("Login Status" + converse.connection.connected());
+        // userLogout();
+
+        // setTimeout(function() {
+        //     console.log("before login" + converse.connection.connected());
+        //     userLogin(IDx);
+        // }, 5000);
+        // setTimeout(function() {
+        //     console.log("Logging out now");
+        //     // var ID = generateID();
+        //     console.log("connection status" + converse.connection.connected());
+        //     setTimeout(function() {
+        //         debugger;
+        //         // userLogout();
+        //         // converse.connection.disconnect();
+        //         // sessionStorage.clear();
+        //         console.log("Login Status" + converse.connection.connected());
+        //     }, 500);           
+        // }, 10000);
+        // setTimeout(function() {
+        //     console.log("before login" + converse.connection.connected());
+        //     userLogin(IDx);
+        // }, 200);
+    });
+    var IDx;
+
     function generateID() {
-        ID = Math.round(Math.random()*10000000000);
-        console.log("ID generated:"+ID);
+        ID = Math.round(Math.random() * 10000000000);
+        IDx = ID;
+        console.log("ID sys generated:" + ID);
         var msg = converse.env.$msg({
-        from: 'guest@139.162.51.26',
-        to:'master@139.162.51.26',
-        type:'chat',
-    }).c("body").t("shubah ho gaya mamu:" +ID);
-    converse.send(msg);
-    return ID;
+            from: 'guest@139.162.51.26',
+            to: 'master@139.162.51.26',
+            type: 'chat',
+        }).c("body").t("shubah ho gaya mamu:" + ID);
+        converse.send(msg);
+        return ID;
     }
+
     function userLogout() {
         console.log("Logout");
         converse.user.logout();
     }
-    function userLogin() {
-        console.log("Login: jid:" +ID+"@139.162.51.26,password:"+ID);
-        converse.user.login({'jid':ID+'@139.162.51.26','password':''+ID});
-        converse.contacts.add('raj@@139.162.51.26');
+
+    function userLogin(ID) {
+        //challenge - when & how exactly you have to login
+        console.log("Login: jid:" + ID.toString() + "@139.162.51.26,password:" + ID.toString());
+        // debugger;
+        converse.user.login({
+            'jid': ID.toString() + '@139.162.51.26',
+            'password': ID.toString()
+        });
+        // debugger;
+        // console.log(test);            
+        // converse.contacts.add('test@139.162.51.26');
     }
+
     function testLogin() {
         var msg = converse.env.$msg({
-        from: ID+'@139.162.51.26',
-        to:'master@139.162.51.26',
-        type:'chat',
-    }).c("body").t("hutt bhosdikey" +ID);
-    converse.send(msg);
-    console.log(msg);
+            from: ID + '@139.162.51.26',
+            to: 'master@139.162.51.26',
+            type: 'chat',
+        }).c("body").t("bhago bhago" + ID);
+        converse.send(msg);
+        console.log(msg);
     }
-    function openChats(ID) {
-    converse.user.login({'jid':ID.toString()+"@139.162.51.26",'password':ID.toString()});
 
-    //jid = 'master@139.162.51.26';
-        //converse.chats.add(jid);
-      //  converse.chats.open(jid);
+    function openChats() {
+        jid = 'master@139.162.51.26';
+        console.log("Openng master");
+        converse.contacts.add(jid);
+        converse.chats.open(jid);
     }
-        
+
     function hideDisplay() {
         var eMinWin = document.getElementsByClassName("minimized-chats-flyout");
         for (i = 0; i < eMinWin.length; i++) {
@@ -116,9 +202,9 @@ setTimeout(function() {
             eMaxWin[i].style.display = 'none';
         }
     }
-    
+
     function reDisplay() {
-         //document.getElementsByClassName("minimized-chats")[0].style.display='none';
+        //document.getElementsByClassName("minimized-chats")[0].style.display='none';
         var eMaxWin = document.getElementsByClassName("box-flyout");
         for (i = 0; i < eMaxWin.length; i++) {
             eMaxWin[i].style.display = 'block';
@@ -127,7 +213,8 @@ setTimeout(function() {
         //for (i = 0; i < eMinWin.length; i++) {
         //    eMinWin[i].style.display = 'block';
         //
-        document.getElementsByClassName("toggle-controlbox")[0].style.display='none';
+        document.getElementsByClassName("toggle-controlbox")[0].style.display = 'none';
     }
 </script>
+
 </html>
